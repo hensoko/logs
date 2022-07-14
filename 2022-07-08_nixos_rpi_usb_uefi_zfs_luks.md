@@ -1,6 +1,12 @@
+# Preparations
+
+Be sure to update your pi eeprom to latest version and enable usb boot. Be aware though that `raspi-config` - the tool to configure several options of your pi, including usb boot - is not available for nixos. In can somehow be done by writing a specific file in the correct (tm) way onto the boot partition to activate it. In my case an already installed raspbian helped much.
+
+The eeprom can be upated with `raspberrypi-eeprom-update -a` from `raspberrypi-eeprom` package.
+
 # Steps
 
-With lots help from
+With lots of help from
 
 * <https://mgdm.net/weblog/nixos-on-raspberry-pi-4/>
 * <https://carjorvaz.com/posts/nixos-on-raspberry-pi-4-with-uefi-and-zfs/>
@@ -71,7 +77,7 @@ rm RPi4_UEFI_Firmware_v1.33.zip
 nixos-generate-config --root /mnt
 ```
 
-### Add necessary statements
+### Configure zfs support
 
 ```
 boot.supportedFilesystems = [ "zfs" ];
@@ -84,7 +90,7 @@ networking.hostId = "<8 random numbers>";
 boot.kernelPackages = pkgs.linuxPackages_latest;
 ```
 
-### Add nixos-hardware for raspberry pi to imports
+### Add nixos-hardware import
 
 ```
 imports =
@@ -100,7 +106,8 @@ imports =
 nixos-install --root /mnt
 ```
 
-### Add wheel to trusted users
+### Add wheel to trusted users (Optional)
+In case you want to deploy via tools like `deploy-rs` this statement is needed as well otherwise you might get `lacks valid signature` errors.
 
 ```
 nix.settings."trusted-users" = [ "@wheel" ];
